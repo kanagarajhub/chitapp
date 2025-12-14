@@ -20,18 +20,26 @@ class ApiService {
 
   // Auth
   Future<Map<String, dynamic>> login(String email, String password) async {
+    print('Attempting login to: ${ApiConfig.baseUrl}/auth/login');
+    print('Email: $email');
+    
     final response = await http.post(
       Uri.parse('${ApiConfig.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
 
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       await _storage.write(key: 'token', value: data['data']['token']);
       return data['data'];
     } else {
-      throw Exception(jsonDecode(response.body)['message'] ?? 'Login failed');
+      final errorData = jsonDecode(response.body);
+      print('Login error: ${errorData['message']}');
+      throw Exception(errorData['message'] ?? 'Login failed');
     }
   }
 
