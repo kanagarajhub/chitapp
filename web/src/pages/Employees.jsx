@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { getEmployees, register } from '../services/api';
-import { FiPlus, FiX } from 'react-icons/fi';
+import { getEmployees, register, deleteEmployee } from '../services/api';
+import { FiPlus, FiX, FiTrash2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 
 const Employees = () => {
+  const { user } = useAuth();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -43,6 +46,17 @@ const Employees = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteEmployee(id);
+      toast.success('Employee removed successfully');
+      setDeleteConfirm(null);
+      fetchEmployees();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error removing employee');
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
@@ -51,13 +65,15 @@ const Employees = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Employees</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-        >
-          <FiPlus className="mr-2" />
-          Add Employee
-        </button>
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            <FiPlus className="mr-2" />
+            Add Employee
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -79,6 +95,11 @@ const Employees = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Status
               </th>
+              {user?.role === 'admin' && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -109,6 +130,17 @@ const Employees = () => {
                     {employee.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </td>
+                {user?.role === 'admin' && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      onClick={() => setDeleteConfirm(employee)}
+                      className="text-red-600 hover:text-red-900"
+                      title="Remove employee"
+                    >
+                      <FiTrash2 size={18} />
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -203,6 +235,40 @@ const Employees = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Confirm Delete</h2>
+              <button onClick={() => setDeleteConfirm(null)} className="text-gray-400 hover:text-gray-600">
+                <FiX size={24} />
+              </button>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to remove <strong>{deleteConfirm.name}</strong>? This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deleteConfirm._id)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
