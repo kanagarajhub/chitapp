@@ -1,0 +1,11 @@
+# Ignore unnecessary files for deployment
+node_modules/
+.env.example
+.git
+.gitignore
+README.md
+*.md
+test/
+tests/
+.vscode/
+.idea/
