@@ -17,7 +17,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Enable CORS
-app.use(cors());
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'https://chitapp.netlify.app',
+    'https://*.netlify.app'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
