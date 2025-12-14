@@ -161,7 +161,10 @@ class _AddCustomerToChitScreenState extends State<AddCustomerToChitScreen> {
                       prefixIcon: Icon(Icons.group),
                     ),
                     items: _chits.map((chit) {
-                      final plan = chit['chit_plan'];
+                      final plan = chit['chit_plan'] ?? {};
+                      final name = chit['name'] ?? 'Unknown Chit';
+                      final amount = plan['amount'] ?? '0';
+                      final duration = plan['duration'] ?? '0';
                       return DropdownMenuItem<String>(
                         value: chit['_id'],
                         child: Column(
@@ -169,11 +172,11 @@ class _AddCustomerToChitScreenState extends State<AddCustomerToChitScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              chit['name'],
+                              name,
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '${plan['amount']} | ${plan['duration']} months',
+                              '₹$amount | $duration months',
                               style: const TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
@@ -212,12 +215,13 @@ class _AddCustomerToChitScreenState extends State<AddCustomerToChitScreen> {
                               final chit = _chits.firstWhere(
                                 (c) => c['_id'] == _selectedChitId,
                               );
-                              final plan = chit['chit_plan'];
+                              final plan = chit['chit_plan'] ?? {};
+                              final members = chit['members'] ?? [];
                               return [
-                                _buildDetailRow('Plan Amount', '₹${plan['amount']}'),
-                                _buildDetailRow('Duration', '${plan['duration']} months'),
-                                _buildDetailRow('Current Members', '${chit['members'].length}'),
-                                _buildDetailRow('Monthly Due', '₹${plan['monthly_installment']}'),
+                                _buildDetailRow('Plan Amount', '₹${plan['amount'] ?? '0'}'),
+                                _buildDetailRow('Duration', '${plan['duration'] ?? '0'} months'),
+                                _buildDetailRow('Current Members', '${members.length}'),
+                                _buildDetailRow('Monthly Due', '₹${plan['monthly_installment'] ?? '0'}'),
                               ];
                             }(),
                           ],

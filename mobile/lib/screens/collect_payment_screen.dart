@@ -62,12 +62,19 @@ class _CollectPaymentScreenState extends State<CollectPaymentScreen> {
 
   void _calculateDueAmount() {
     if (_selectedChitId != null && _paymentType == 'installment') {
-      final chit = _chits.firstWhere((c) => c['_id'] == _selectedChitId);
-      final monthlyAmount = chit['chit_plan']['monthly_installment'];
-      setState(() {
-        _dueAmount = double.parse(monthlyAmount.toString());
-        _amountController.text = _dueAmount!.toStringAsFixed(0);
-      });
+      try {
+        final chit = _chits.firstWhere((c) => c['_id'] == _selectedChitId);
+        final chitPlan = chit['chit_plan'];
+        if (chitPlan != null && chitPlan['monthly_installment'] != null) {
+          final monthlyAmount = chitPlan['monthly_installment'];
+          setState(() {
+            _dueAmount = double.parse(monthlyAmount.toString());
+            _amountController.text = _dueAmount!.toStringAsFixed(0);
+          });
+        }
+      } catch (e) {
+        print('Error calculating due amount: $e');
+      }
     }
   }
 
