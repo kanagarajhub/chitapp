@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../models/customer.dart';
+import 'add_customer_screen.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
@@ -89,11 +90,16 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to add customer screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add customer feature - Coming soon')),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddCustomerScreen(),
+            ),
           );
+          if (result == true) {
+            _loadCustomers();
+          }
         },
         child: const Icon(Icons.add),
       ),

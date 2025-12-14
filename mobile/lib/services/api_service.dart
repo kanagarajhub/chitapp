@@ -139,6 +139,21 @@ class ApiService {
     }
   }
 
+  // Add member to chit
+  Future<Map<String, dynamic>> addMemberToChit(String chitId, Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}/chits/$chitId/members'),
+      headers: await _getHeaders(),
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body)['data'];
+    } else {
+      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to add member to chit');
+    }
+  }
+
   // Bids
   Future<List<dynamic>> getBids() async {
     final response = await http.get(

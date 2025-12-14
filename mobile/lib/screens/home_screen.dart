@@ -5,6 +5,9 @@ import 'dashboard_screen.dart';
 import 'customers_screen.dart';
 import 'payments_screen.dart';
 import 'chits_screen.dart';
+import 'add_customer_screen.dart';
+import 'add_customer_to_chit_screen.dart';
+import 'collect_payment_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,6 +34,63 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Chit Fund Management'),
         actions: [
+          // Quick Actions Menu
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.add_circle_outline),
+            tooltip: 'Quick Actions',
+            itemBuilder: (context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'add_customer',
+                child: ListTile(
+                  leading: Icon(Icons.person_add),
+                  title: Text('Add Customer'),
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'add_to_chit',
+                child: ListTile(
+                  leading: Icon(Icons.group_add),
+                  title: Text('Add to Chit'),
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'collect_payment',
+                child: ListTile(
+                  leading: Icon(Icons.payment),
+                  title: Text('Collect Payment'),
+                ),
+              ),
+            ],
+            onSelected: (value) {
+              switch (value) {
+                case 'add_customer':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddCustomerScreen(),
+                    ),
+                  );
+                  break;
+                case 'add_to_chit':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddCustomerToChitScreen(),
+                    ),
+                  );
+                  break;
+                case 'collect_payment':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CollectPaymentScreen(),
+                    ),
+                  );
+                  break;
+              }
+            },
+          ),
+          // User Menu
           PopupMenuButton<String>(
             icon: const Icon(Icons.person),
             itemBuilder: (context) => <PopupMenuEntry<String>>[
